@@ -3,6 +3,8 @@ import sys
 from getkey import getkey,keys
 from mazes import *
 def delay_print(s,speed=0.05):
+	global speedrun
+	if speedrun:speed=0
 	for c in s:
 		sys.stdout.write(c)
 		sys.stdout.flush()
@@ -10,7 +12,7 @@ def delay_print(s,speed=0.05):
 money=0
 place="start"
 roomx=0
-roomy=1
+roomy=2
 xpos=3
 ypos=3
 xblit=0
@@ -37,6 +39,7 @@ def draw_maze(roomy,roomx,xpos,ypos):
 			elif xpos==x and ypos==y:display+="\U0001F642"
 			elif room[y][x] == 0:display+="  "
 			elif room[y][x] == 1 or room[y][x] == 2:display+="\u2588\u2588"
+			elif room[y][x] == 3:display+="💰"
 		display+="\n"
 	return display
 def movement():
@@ -65,7 +68,9 @@ def movement():
 		print(draw_maze(roomy,roomx,xpos,ypos))
 	elif ytest>ylen-1:
 		roomy+=1
-		room=master_maze[roomy][roomx].get_maze()
+		maze=master_maze[roomy][roomx]
+		room=maze.get_maze()
+		exits=maze.get_exits()
 		new_ylen=len(room)
 		new_xlen=len(room[0])
 		ytest=0
@@ -75,7 +80,9 @@ def movement():
 		print(draw_maze(roomy,roomx,xpos,ypos))
 	elif xtest<0:
 		roomx-=1
-		room=master_maze[roomy][roomx].get_maze()
+		maze=master_maze[roomy][roomx]
+		room=maze.get_maze()
+		exits=maze.get_exits()
 		new_ylen=len(room)
 		new_xlen=len(room[0])
 		ytest=exits[1]
@@ -85,7 +92,9 @@ def movement():
 		print(draw_maze(roomy,roomx,xpos,ypos))
 	elif xtest>xlen-1:
 		roomx+=1
-		room=master_maze[roomy][roomx].get_maze()
+		maze=master_maze[roomy][roomx]
+		room=maze.get_maze()
+		exits=maze.get_exits()
 		new_ylen=len(room)
 		new_xlen=len(room[0])
 		ytest=exits[3]
@@ -95,6 +104,11 @@ def movement():
 		print(draw_maze(roomy,roomx,xpos,ypos))
 	elif room[ytest][xtest]==1:
 		exit
+	elif room[ytest][xtest]==3:
+		global money
+		money+=10
+		room[ytest][xtest]=0
+		print("You got 10 Coins")
 	else:
 		xpos = xtest
 		ypos=ytest
@@ -142,7 +156,7 @@ elif "Hoisington" in name:
 elif name=="Bryan":
 	delay_print("Nice!")
 elif name=="Joshua":
-	delay_print("Oh him, he owes he quite a few quizes")
+	delay_print("Oh him, he owes he quite a bit of homework")
 elif name=="Ethan":
 	delay_print("You suck")
 elif name=="Josh":
